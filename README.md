@@ -35,6 +35,24 @@ ClaraVisio (or Clara for short; Latin for "clear sight") builds on top of two pr
 
 *Placeholder text for the image capturing process.changed. *
 
+Files are in raspberr_pi folder with the SOP
+
+uses rclone to sync with google, configuration
+
+to ssh into your raspberry pi 5: 
+
+to have the script running at boot up use 
+
+```bash
+sudo crontab -e
+```
+
+added this code to bottom:
+```
+@reboot /path/to/python/script &
+```
+saved with CTRL+O and exit with CTRL+X
+
 [Back to the top](#table-of-contents)
 
 </details>
