@@ -106,7 +106,7 @@ pip install -r requirements.txt
 ### train
 
 ```bash
-python train.py --dataroot datasets/StereoFog/stereofog_images_processed --name AL1 --model pix2pix --direction BtoA --gpu_ids 0 --n_epochs 25 --n_epochs_decay 15
+python train.py --dataroot datasets/StereoFog/stereofog_images_processed --name AL1 --model pix2pix --direction BtoA --gpu_ids 0 --n_epochs 25
 
 
 
