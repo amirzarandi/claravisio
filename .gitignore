@@ -162,7 +162,7 @@ cython_debug/
 # Large folders
 !datasets/make_dataset_aligned.py
 !datasets/combine_A_and_B.py
-datasets
+datasets/StereoFog/stereofog_images
 results
 backup
 checkpoints
@@ -180,25 +180,6 @@ slurm*.*
 *.dtmp
 *.bkp
 *.pdf
-datasets/stereofog_images/A/test/1.bmp
-datasets/stereofog_images/A/test/2.bmp
-datasets/stereofog_images/A/test/32.bmp
-datasets/stereofog_images/A/test/39.bmp
-datasets/stereofog_images/A/test/46.bmp
-datasets/stereofog_images/A/test/47.bmp
-datasets/stereofog_images/A/test/62.bmp
-datasets/stereofog_images/A/test/68.bmp
-datasets/stereofog_images/A/test/80.bmp
-datasets/stereofog_images/A/test/99.bmp
-datasets/stereofog_images/A/test/112.bmp
-datasets/stereofog_images/A/test/116.bmp
-datasets/stereofog_images/A/test/127.bmp
-datasets/stereofog_images/A/test/138.bmp
-datasets/stereofog_images/A/test/140.bmp
-datasets/stereofog_images/A/test/142.bmp
-datasets/stereofog_images/A/test/168.bmp
-datasets/stereofog_images/A/test/170.bmp
-datasets/stereofog_images/A/test/186.bmp
 *.raw
 
 .venv/

@@ -46,6 +46,13 @@ ClaraVisio (or Clara for short; Latin for "clear sight") builds on top of two pr
 
 *Placeholder text for the model training process.*
 
+*install conda from website*
+
+```bash
+module use $HOME/MyModules
+module load miniconda3/latest
+```
+
 [Back to the top](#table-of-contents)
 
 </details>
@@ -56,6 +63,17 @@ ClaraVisio (or Clara for short; Latin for "clear sight") builds on top of two pr
 
 *Placeholder text for the datasets.*
 
+StereoFog images: [GDrive](https://drive.google.com/drive/folders/1Tzo1lDyHiiTZUwWrtjHaJ5GObJZZZMe1)
+FogEye images: 
+ClaraVisio images: 
+
+place inside a datsets directory
+
+```bash
+sudo apt-get install unzip
+unzip file.zip
+```
+
 [Back to the top](#table-of-contents)
 
 ---
@@ -64,7 +82,16 @@ ClaraVisio (or Clara for short; Latin for "clear sight") builds on top of two pr
 
 ### Installation
 
-*Placeholder text for installation instructions.*
+```bash
+git clone https://github.com/amirzarandi/claravisio
+cd claravisio
+python -m venv .venv
+```
+kill terminal then activate environment
+```bash
+pip install -r requirements.txt
+```
+
 
 ### API Reference
 
