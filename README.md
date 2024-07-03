@@ -53,6 +53,12 @@ module use $HOME/MyModules
 module load miniconda3/latest
 ```
 
+to run jupyter notebooks you need to:
+
+```bash
+pip install notebook
+```
+
 [Back to the top](#table-of-contents)
 
 </details>
@@ -64,19 +70,20 @@ module load miniconda3/latest
 *Placeholder text for the datasets.*
 
 StereoFog images: [GDrive](https://drive.google.com/drive/folders/1Tzo1lDyHiiTZUwWrtjHaJ5GObJZZZMe1)
-FogEye images: [MSOneDrive](https://uofutah-my.sharepoint.com/:f:/g/personal/u1259003_umail_utah_edu/EixKW5TDXE9NtsfGnCAcxcsB4uOTbCRi83Eg4y5iKnUHUQ) - Only Available for U of U students/staff, contact us for premission
+FogEye images: [MSOneDrive](https://uofutah-my.sharepoint.com/:f:/g/personal/u1259003_umail_utah_edu/EixKW5TDXE9NtsfGnCAcxcsB4uOTbCRi83Eg4y5iKnUHUQ) - Only Available for U of U students/staff, contact us for premission; needs cleaning (only download directories that contain raw files)
 ClaraVisio images: 
 
-place inside a datsets/SteroFog directory and unzip
+place inside a datasets/SteroFog directory and unzip
 
 ```bash
-sudo apt-get install unzip
+apt-get install unzip
 unzip file.zip
 ```
 
 ``` bash
 python preprocess_stereofog_dataset.py --dataroot datasets/StereoFog/stereofog_images
 ```
+need to run again to create a new split.
 
 [Back to the top](#table-of-contents)
 
@@ -94,6 +101,16 @@ python -m venv .venv
 kill terminal then activate environment
 ```bash
 pip install -r requirements.txt
+```
+
+### train
+
+```bash
+python train.py --dataroot datasets/stereofog_images --name Al1 --model pix2pix --direction BtoA --gpu_ids 0 --continue_train
+
+
+python train.py --dataroot .\datasets\stereofog_images --name stereo_pix2pix --model pix2pix --direction BtoA --gpu_ids -1 --n_epochs 1  # gpu_ids -1 is for devices that are not cuda enabled.
+python test.py --dataroot .\datasets\stereofog_images --direction BtoA --model pix2pix --name stereo_pix2pix --gpu_ids -1
 ```
 
 
