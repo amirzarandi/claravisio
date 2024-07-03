@@ -106,7 +106,8 @@ pip install -r requirements.txt
 ### train
 
 ```bash
-python train.py --dataroot datasets/stereofog_images --name Al1 --model pix2pix --direction BtoA --gpu_ids 0 --continue_train
+python train.py --dataroot datasets/StereoFog/stereofog_images_processed --name AL1 --model pix2pix --direction BtoA --gpu_ids 0 --continue_train --n_epochs 25
+
 
 
 python train.py --dataroot .\datasets\stereofog_images --name stereo_pix2pix --model pix2pix --direction BtoA --gpu_ids -1 --n_epochs 1  # gpu_ids -1 is for devices that are not cuda enabled.
