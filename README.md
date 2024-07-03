@@ -33,7 +33,7 @@ ClaraVisio (or Clara for short; Latin for "clear sight") builds on top of two pr
 <details>
 <summary><h2>Image Capturing</h2></summary>
 
-*Placeholder text for the image capturing process.*
+*Placeholder text for the image capturing process.changed. *
 
 [Back to the top](#table-of-contents)
 
