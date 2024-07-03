@@ -64,14 +64,18 @@ module load miniconda3/latest
 *Placeholder text for the datasets.*
 
 StereoFog images: [GDrive](https://drive.google.com/drive/folders/1Tzo1lDyHiiTZUwWrtjHaJ5GObJZZZMe1)
-FogEye images: 
+FogEye images: [MSOneDrive](https://uofutah-my.sharepoint.com/:f:/g/personal/u1259003_umail_utah_edu/EixKW5TDXE9NtsfGnCAcxcsB4uOTbCRi83Eg4y5iKnUHUQ) - Only Available for U of U students/staff, contact us for premission
 ClaraVisio images: 
 
-place inside a datsets directory
+place inside a datsets/SteroFog directory and unzip
 
 ```bash
 sudo apt-get install unzip
 unzip file.zip
+```
+
+``` bash
+python preprocess_stereofog_dataset.py --dataroot datasets/StereoFog/stereofog_images
 ```
 
 [Back to the top](#table-of-contents)

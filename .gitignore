@@ -162,7 +162,9 @@ cython_debug/
 # Large folders
 !datasets/make_dataset_aligned.py
 !datasets/combine_A_and_B.py
+datasets/FogEye
 datasets/StereoFog/stereofog_images
+datasets/StereoFog/stereofog_images_processed
 results
 backup
 checkpoints
