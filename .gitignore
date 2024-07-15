@@ -165,6 +165,8 @@ cython_debug/
 datasets/FogEye/HDR
 datasets/StereoFog/stereofog_images
 datasets/StereoFog/stereofog_images_processed
+datasets/clara_images_processed
+datsets/clara_images_processed_bmp
 results
 backup
 checkpoints

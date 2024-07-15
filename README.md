@@ -132,6 +132,19 @@ python train.py --dataroot .\datasets\stereofog_images --name stereo_pix2pix --m
 python test.py --dataroot .\datasets\stereofog_images --direction BtoA --model pix2pix --name stereo_pix2pix --gpu_ids -1
 ```
 
+### test
+
+```bash
+python test.py --dataroot datasets/StereoFog/stereofog_images_processed --direction BtoA --model pix2pix --name AL1 --gpu_ids 0
+
+
+python test.py --dataroot datasets/clara_images_processed_bmp --direction BtoA --model pix2pix --name AL1 --gpu_ids 0
+
+python plot_model_results.py --results_path results/AL1
+
+python preprocess_clara.py --dataroot datasets/ClaraVisio
+```
+
 
 ### API Reference
 

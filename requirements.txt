@@ -18,3 +18,14 @@ scikit-learn
 scikit-optimize
 matplotlib
 bayesian-optimization
+torchvision
+dominate
+pandas
+matplotlib
+seaborn
+opencv-python
+scikit-image
+pyssim
+pytorch-msssim
+Augmentor
+
