@@ -100,6 +100,8 @@ unzip file.zip
 
 ``` bash
 python preprocess_stereofog_dataset.py --dataroot datasets/StereoFog/stereofog_images
+
+python preprocess_clara.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/claravisio_images
 ```
 need to run again to create a new split.
 
@@ -114,12 +116,50 @@ need to run again to create a new split.
 ```bash
 git clone https://github.com/amirzarandi/claravisio
 cd claravisio
-python -m venv .venv
 ```
-kill terminal then activate environment
+Installing a Python environment
+
+Next, an appropriate Python environment needs to be created. All code was run on Python `3.9.7`. For creating the environment, either [`conda`](https://www.anaconda.com) or [`pyenv virtualenv`](https://github.com/pyenv/pyenv-virtualenv) can be used.
+
+---
+The environment can be created using `conda` with:
+```bash
+conda create --name claravisio python=3.9.7
+```
+
+Or using `pyenv virtualenv` with:
+```bash
+pyenv virtualenv 3.9.7 claravisio
+```
+---
+Then activate the environment with:
+```bash
+conda activate claravisio
+```
+Or:n
+
+```bash
+pyenv activate claravisio
+```
+
+---
+Using `pip`, the required packages can then be installed. (for `conda` environments, execute
+```bash
+conda install pip
+```
+before to install pip). The packages are listed in the `requirements.txt` and can be installed with:
 ```bash
 pip install -r requirements.txt
 ```
+
+In case you want to install them manually, the packages include:
+
+- `numpy`
+- `torch`
+- `opencv-python`
+- `matplotlib`
+- ...
+
 
 ### train
 
@@ -127,9 +167,11 @@ pip install -r requirements.txt
 python train.py --dataroot datasets/StereoFog/stereofog_images_processed --name AL1 --model pix2pix --direction BtoA --gpu_ids 0 --n_epochs 25
 
 
+python train.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/clara_images_processed --name CLARA1 --model pix2pix --direction BtoA --gpu_ids 0 --n_epochs 25 --n_epochs_decay 15
 
-python train.py --dataroot .\datasets\stereofog_images --name stereo_pix2pix --model pix2pix --direction BtoA --gpu_ids -1 --n_epochs 1  # gpu_ids -1 is for devices that are not cuda enabled.
-python test.py --dataroot .\datasets\stereofog_images --direction BtoA --model pix2pix --name stereo_pix2pix --gpu_ids -1
+python test.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/clara_images_processed --direction BtoA --model pix2pix --name CLARA1 --gpu_ids 0
+
+
 ```
 
 ### test
@@ -140,7 +182,7 @@ python test.py --dataroot datasets/StereoFog/stereofog_images_processed --direct
 
 python test.py --dataroot datasets/clara_images_processed_bmp --direction BtoA --model pix2pix --name AL1 --gpu_ids 0
 
-python plot_model_results.py --results_path results/AL1
+python plot_model_results.py --results_path results/CLARA1
 
 python preprocess_clara.py --dataroot datasets/ClaraVisio
 ```

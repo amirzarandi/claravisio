@@ -1,6 +1,7 @@
 import shutil
 import os
 import random
+import numpy as np
 import argparse
 import subprocess
 import Augmentor
@@ -39,45 +40,51 @@ for folder in folders:
         for file in files:
             shutil.copy(os.path.join(path, folder, subfolder, file), os.path.join(new_subfolder_path, file))
 
-print('Creating test split...')
+print('Creating train/test/val splits...')
 all_files = os.listdir(os.path.join(processed_path, 'A'))
 
 random.seed(0)
 
-subset_test = all_files
+subset_train = random.sample(all_files, round(len(all_files) * 0.8))
+remaining = list(set(all_files) - set(subset_train))
+subset_val = random.sample(remaining, round(len(remaining) * 0.5))
+subset_test = list(set(remaining) - set(subset_val))
+
+subfolders = ['/train', '/val', '/test']
 
 for folder in ['/A', '/B']:
-    test_folder_path = os.path.join(processed_path, folder[1:], 'test')
-    os.makedirs(test_folder_path, exist_ok=True)
+    for subfolder, subset in zip(subfolders, [subset_train, subset_val, subset_test]):
+        split_folder_path = os.path.join(processed_path, folder[1:], subfolder[1:])
+        os.makedirs(split_folder_path, exist_ok=True)
 
-    for file in subset_test:
-        try:
-            shutil.move(os.path.join(processed_path, folder[1:], file), os.path.join(test_folder_path, file))
-        except FileNotFoundError:
-            pass
+        for file in subset:
+            try:
+                shutil.move(os.path.join(processed_path, folder[1:], file), os.path.join(split_folder_path, file))
+            except FileNotFoundError:
+                pass
 
 if augment:
     print('Augmenting the dataset...')
-    p = Augmentor.Pipeline(os.path.join(processed_path, 'B/test'))
-    p.ground_truth(os.path.join(processed_path, 'A/test'))
+    p = Augmentor.Pipeline(os.path.join(processed_path, 'B/train'))
+    p.ground_truth(os.path.join(processed_path, 'A/train'))
     p.flip_left_right(probability=1)
     p.zoom_random(probability=0.3, percentage_area=0.8)
     p.process()
 
-    augmentor_subfolder = 'B/test/output'
+    augmentor_subfolder = 'B/train/output'
     for image in [item for item in os.listdir(os.path.join(processed_path, augmentor_subfolder)) if not os.path.isdir(os.path.join(processed_path, augmentor_subfolder, item))]:
         image_new = image.rsplit('_', 1)[0]
 
         if 'groundtruth' in image_new:
-            image_new = image_new.replace('_groundtruth_(1)_test_', '').replace('.bmp', '_augmented.bmp')
+            image_new = image_new.replace('_groundtruth_(1)_train_', '').replace('.bmp', '_augmented.bmp')
             try:
-                shutil.move(os.path.join(processed_path, augmentor_subfolder, image), os.path.join(processed_path, 'A/test', image_new))
+                shutil.move(os.path.join(processed_path, augmentor_subfolder, image), os.path.join(processed_path, 'A/train', image_new))
             except FileNotFoundError:
                 pass
         else:
-            image_new = image_new.replace('test_original_', '').replace('.bmp', '_augmented.bmp')
+            image_new = image_new.replace('train_original_', '').replace('.bmp', '_augmented.bmp')
             try:
-                shutil.move(os.path.join(processed_path, augmentor_subfolder, image), os.path.join(processed_path, 'B/test', image_new))
+                shutil.move(os.path.join(processed_path, augmentor_subfolder, image), os.path.join(processed_path, 'B/train', image_new))
             except FileNotFoundError:
                 pass
 
@@ -87,6 +94,6 @@ subprocess.call(combination_command, shell=True)
 
 print("Dataset preprocessing complete.")
 if augment:
-    print(f"The dataset contains {len(subset_test) * 2} test images after augmentation.")
+    print(f"The dataset contains {len(subset_train) * 2} training images, {len(subset_val)} validation images, and {len(subset_test)} test images after augmentation.")
 else:
-    print(f"The dataset contains {len(subset_test)} test images.")
+    print(f"The dataset contains {len(subset_train)} training images, {len(subset_val)} validation images, and {len(subset_test)} test images.")
