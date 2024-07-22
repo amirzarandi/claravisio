@@ -23,7 +23,7 @@ if 'augmented' not in path and augment:
         sys.exit()
 
 # Create new processed directory
-processed_path = os.path.join(os.path.dirname(path), 'stereofog_images_processed')
+processed_path = os.path.join(os.path.dirname(path), 'clara_images_processed')
 os.makedirs(processed_path, exist_ok=True)
 
 # Move all subsets of the dataset into one folder in the processed directory
@@ -81,7 +81,7 @@ if augment:
             except FileNotFoundError:
                 pass
 
-combination_command = f"python datasets/combine_A_and_B.py --fold_A {os.path.join(processed_path, 'A')} --fold_B {os.path.join(processed_path, 'B')} --fold_AB {processed_path} --no_multiprocessing"
+combination_command = f"python combine_A_and_B.py --fold_A {os.path.join(processed_path, 'A')} --fold_B {os.path.join(processed_path, 'B')} --fold_AB {processed_path} --no_multiprocessing"
 print('Combining the A and B folders...')
 subprocess.call(combination_command, shell=True)
 
