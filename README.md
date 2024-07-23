@@ -99,7 +99,7 @@ unzip file.zip
 ```
 
 ``` bash
-python preprocess_stereofog_dataset.py --dataroot datasets/StereoFog/stereofog_images
+python preprocess_stereofog_dataset.py --dataroot /scratch/general/nfs1/u6059624/StereoFog/stereofog_images
 
 python preprocess_clara.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/claravisio_images
 ```
