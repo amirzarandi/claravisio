@@ -86,7 +86,7 @@ def produce_fig(epoch_index, image_index):
 epochs = sorted(list(set([int(item.replace('_net_G.pth', '').replace('_net_D.pth', '')) for item in os.listdir(checkpoints_path) if '.pth' in item and 'latest' not in item])))
 
 # results_path = f'results/epochs/'
-results_path = f"results/epochs/{model_name}_epochs"
+results_path = f"results/{model_name}"
 
 # dataset_image_path = os.path.join(dataroot, 'A', 'test')
 # dataset_image_file = [item for item in os.listdir(dataset_image_path)][0]

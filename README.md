@@ -180,9 +180,9 @@ python test.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/clara_images
 python test.py --dataroot /scratch/general/nfs1/u6059624/StereoFog/stereofog_images_processed  --direction BtoA --model pix2pix --name CLAXANDER --gpu_ids 0
 
 
-python test.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/clara_images_processed --direction BtoA --model pix2pix --name CLARA3 --gpu_ids 0
+python test.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/clara_images_processed --direction BtoA --model pix2pix --name CLARA1 --gpu_ids 0
 
-python plot_model_results.py --results_path results/CLARA3
+python plot_model_results.py --results_path results/CLAXANDER --shuffle
 
 python preprocess_clara.py --dataroot datasets/ClaraVisio
 ```
@@ -190,7 +190,9 @@ python preprocess_clara.py --dataroot datasets/ClaraVisio
 metrics
 
 ```bash
+python plot_epoch_progress.py --model_name CLAXANDER --checkpoints_path checkpoints/CLAXANDER
 
+python quantitative_evaluation_model_results.py --results_path results/CLAXANDER
 ```
 
 
