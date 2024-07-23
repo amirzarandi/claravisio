@@ -1,7 +1,8 @@
 import os
+import argparse
 from PIL import Image
 
-def convert_and_resize_images(input_folder, output_folder, new_size=(240, 320)):
+def convert_and_resize_images(input_folder, output_folder, new_size=(320, 240)):
     # Create the output folder if it doesn't exist
     os.makedirs(output_folder, exist_ok=True)
 
@@ -25,8 +26,14 @@ def convert_and_resize_images(input_folder, output_folder, new_size=(240, 320)):
                     img_resized = img.resize(new_size)
                     img_resized.save(output_file_path)
 
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Convert and resize images.')
+    parser.add_argument('--dataroot', type=str, required=True, help='The root directory containing the input images.')
 
-input_folder = 'datasets/clara_images_processed'
-output_folder = 'datasets/clara_images_processed_bmp'
+    args = parser.parse_args()
 
-convert_and_resize_images(input_folder, output_folder)
+    input_folder = args.dataroot
+    parent_dir = os.path.dirname(input_folder)
+    output_folder = os.path.join(parent_dir, 'bmp_images')
+
+    convert_and_resize_images(input_folder, output_folder)

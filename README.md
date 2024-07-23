@@ -164,10 +164,10 @@ In case you want to install them manually, the packages include:
 ### train
 
 ```bash
-python train.py --dataroot datasets/StereoFog/stereofog_images_processed --name AL1 --model pix2pix --direction BtoA --gpu_ids 0 --n_epochs 25
+python train.py --dataroot /scratch/general/nfs1/u6059624/StereoFog/stereofog_images_processed --name CLAXANDER --model pix2pix --direction BtoA --gpu_ids 0 --n_epochs 25 --n_epochs_decay 15
 
 
-python train.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/clara_images_processed --name CLARA1 --model pix2pix --direction BtoA --gpu_ids 0 --n_epochs 25 --n_epochs_decay 15
+python train.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/clara_images_processed --name CLARA3 --model pix2pix --direction BtoA --gpu_ids 0 --n_epochs 25 --n_epochs_decay 15
 
 python test.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/clara_images_processed --direction BtoA --model pix2pix --name CLARA1 --gpu_ids 0
 
@@ -177,14 +177,20 @@ python test.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/clara_images
 ### test
 
 ```bash
-python test.py --dataroot datasets/StereoFog/stereofog_images_processed --direction BtoA --model pix2pix --name AL1 --gpu_ids 0
+python test.py --dataroot /scratch/general/nfs1/u6059624/StereoFog/stereofog_images_processed  --direction BtoA --model pix2pix --name CLAXANDER --gpu_ids 0
 
 
-python test.py --dataroot datasets/clara_images_processed_bmp --direction BtoA --model pix2pix --name AL1 --gpu_ids 0
+python test.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/clara_images_processed --direction BtoA --model pix2pix --name CLARA3 --gpu_ids 0
 
-python plot_model_results.py --results_path results/CLARA1
+python plot_model_results.py --results_path results/CLARA3
 
 python preprocess_clara.py --dataroot datasets/ClaraVisio
+```
+
+metrics
+
+```bash
+
 ```
 
 

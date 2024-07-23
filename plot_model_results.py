@@ -117,10 +117,14 @@ if not no_laplace:
 
     laplacian_values = []
     for i in range(num_images):
-        # Reading in the fogged image and calculating the variance of the Laplacian
-        fogged_image_gray = cv2.cvtColor(cv2.imread(os.path.join(results_path, images[i][:-letters_to_remove] + real_foggy_image_addition + '.png')), cv2.COLOR_BGR2GRAY)
-        
-        laplacian_values += [variance_of_laplacian(fogged_image_gray)]
+        try:
+            # Reading in the fogged image and calculating the variance of the Laplacian
+            fogged_image_gray = cv2.cvtColor(cv2.imread(os.path.join(results_path, images[i][:-letters_to_remove] + real_foggy_image_addition + '.png')), cv2.COLOR_BGR2GRAY)
+            laplacian_values += [variance_of_laplacian(fogged_image_gray)]
+        except IndexError:
+            print(f"IndexError: list index out of range for image index {i}. Skipping this image.")
+            continue
+
 
 # Sorting the images by the Laplacian variance if specified
 if sort_by_laplacian:
