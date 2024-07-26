@@ -22,7 +22,6 @@ from torch import squeeze
 from PIL import Image
 import torchvision.transforms as T
 from skimage.metrics import peak_signal_noise_ratio as psnr
-from torch.nn import functional as F
 import matplotlib.pyplot as plt
 
 # code for detecting the blurriness of an image (https://pyimagesearch.com/2015/09/07/blur-detection-with-opencv/)
@@ -59,15 +58,33 @@ def image_ncc(img1, img2):
     """
     return (1.0/(img1.size-1)) * np.sum(norm_data(img1)*norm_data(img2))
 
-# Code for calculating the MAE between two images
+def normalize_image(image):
+    """Normalize image to range [0, 1]."""
+    return image / 255.0
+
 def image_mae(img1, img2):
+    """Calculate Mean Absolute Error between two images."""
     return np.mean(np.abs(img1 - img2))
 
-# Function to calculate Cross-Entropy loss
 def image_cross_entropy(img1, img2):
+    """Calculate Cross-Entropy loss between two images."""
+    # Ensure images are in the [0, 1] range and are tensors
     img1_tensor = torch.tensor(img1, dtype=torch.float32)
     img2_tensor = torch.tensor(img2, dtype=torch.float32)
-    return F.binary_cross_entropy_with_logits(img1_tensor, img2_tensor).item()
+
+    # Normalize if they are not already in the range [0, 1]
+    if img1_tensor.max() > 1.0 or img2_tensor.max() > 1.0:
+        img1_tensor = img1_tensor / 255.0
+        img2_tensor = img2_tensor / 255.0
+
+    # Ensure the tensors are in the correct shape for binary cross entropy
+    if img1_tensor.shape != img2_tensor.shape:
+        raise ValueError("Input tensors must have the same shape.")
+
+    # Compute binary cross entropy loss
+    cross_entropy = torch.nn.functional.binary_cross_entropy(img1_tensor, img2_tensor)
+
+    return cross_entropy.item()
 
 def calculate_model_results(results_path, epoch='latest', epoch_test=False):
     if epoch_test:
@@ -76,12 +93,6 @@ def calculate_model_results(results_path, epoch='latest', epoch_test=False):
     else:
         results_path = os.path.join(results_path, f'test_{epoch}/images')
 
-    # CW-SSIM implementation
-    gaussian_kernel_sigma = 1.5
-    gaussian_kernel_width = 11
-    gaussian_kernel_1d = get_gaussian_kernel(gaussian_kernel_width, gaussian_kernel_sigma)
-
-    # Indexing the images
     images = [entry for entry in os.listdir(results_path) if 'fake_B' in entry]
 
     Pearson_image_correlations = []
@@ -98,27 +109,37 @@ def calculate_model_results(results_path, epoch='latest', epoch_test=False):
 
     for i, image in enumerate(images):
         clear_image_nonfloat = cv2.imread(os.path.join(results_path, images[i][:-10] + 'real_B' + '.png'))
-        fogged_image_nonfloat = cv2.imread(os.path.join(results_path, images[i][:-10] + 'real_A' + '.png'))
         fake_image_nonfloat = cv2.imread(os.path.join(results_path, images[i]))
 
         clear_image_gray = cv2.cvtColor(clear_image_nonfloat, cv2.COLOR_BGR2GRAY)
         fake_image_gray = cv2.cvtColor(fake_image_nonfloat, cv2.COLOR_BGR2GRAY)
-        Pearson_image_correlation = np.corrcoef(np.asarray(fake_image_gray), np.asarray(clear_image_gray))
+
+        # Normalize images
+        clear_image_gray_norm = normalize_image(clear_image_gray)
+        fake_image_gray_norm = normalize_image(fake_image_gray)
+
+        # Pearson correlation
+        Pearson_image_correlation = np.corrcoef(np.asarray(fake_image_gray_norm), np.asarray(clear_image_gray_norm))
         corrImAbs = np.absolute(Pearson_image_correlation)
         Pearson_image_correlations.append(np.mean(corrImAbs))
 
-        MSE_score = image_mse(clear_image_gray, fake_image_gray)
+        # MSE
+        MSE_score = image_mse(clear_image_gray_norm, fake_image_gray_norm)
         MSE_scores.append(MSE_score)
 
-        NCC_score = image_ncc(clear_image_gray, fake_image_gray)
+        # NCC
+        NCC_score = image_ncc(clear_image_gray_norm, fake_image_gray_norm)
         NCC_scores.append(NCC_score)
 
-        (SSIM_score_reconstruction, SSIM_diff_reconstruction) = structural_similarity(clear_image_nonfloat, fogged_image_nonfloat, full=True, multichannel=True, channel_axis=2)
+        # SSIM
+        (SSIM_score_reconstruction, _) = structural_similarity(clear_image_nonfloat, fake_image_nonfloat, full=True, multichannel=True, channel_axis=2)
         SSIM_scores.append(SSIM_score_reconstruction)
 
+        # CW-SSIM
         CW_SSIM = SSIM(Image.open(os.path.join(results_path, images[i][:-10] + 'real_B' + '.png'))).cw_ssim_value(Image.open(os.path.join(results_path, images[i])))
         CW_SSIM_scores.append(CW_SSIM)
 
+        # MS-SSIM
         real_img = np.array(Image.open(os.path.join(results_path, images[i][:-10] + 'real_B' + '.png'))).astype(np.float32)
         real_img = torch.from_numpy(real_img).unsqueeze(0).permute(0, 3, 1, 2)
         fake_img = np.array(Image.open(os.path.join(results_path, images[i]))).astype(np.float32)
@@ -126,16 +147,16 @@ def calculate_model_results(results_path, epoch='latest', epoch_test=False):
         MS_SSIM = ms_ssim(real_img, fake_img, data_range=255, size_average=True).item()
         MS_SSIM_scores.append(MS_SSIM)
 
-        # Calculate MAE
-        MAE_score = image_mae(clear_image_gray, fake_image_gray)
+        # MAE
+        MAE_score = image_mae(clear_image_gray_norm, fake_image_gray_norm)
         MAE_scores.append(MAE_score)
 
-        # Calculate PSNR
-        PSNR_score = psnr(clear_image_gray, fake_image_gray, data_range=255)
+        # PSNR
+        PSNR_score = psnr(clear_image_gray_norm, fake_image_gray_norm, data_range=1)
         PSNR_scores.append(PSNR_score)
 
-        # Calculate Cross-Entropy
-        Cross_entropy_score = image_cross_entropy(clear_image_gray, fake_image_gray)
+        # Cross-Entropy
+        Cross_entropy_score = image_cross_entropy(clear_image_gray_norm, fake_image_gray_norm)
         Cross_entropy_scores.append(Cross_entropy_score)
 
         if i % 25 == 0:
@@ -152,7 +173,7 @@ def calculate_model_results(results_path, epoch='latest', epoch_test=False):
     mean_Cross_entropy = np.mean(Cross_entropy_scores)
 
     return mean_Pearson, mean_MSE, mean_NCC, mean_SSIM, mean_CW_SSIM, mean_MS_SSIM, mean_MAE, mean_PSNR, mean_Cross_entropy
-    
+
 # Code source: https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix/issues/1161
 def generate_stats_from_log(experiment_name, line_interval=10, nb_data=10800, enforce_last_line=True, fig = None, ax = None, highlight_epoch=None):
     """

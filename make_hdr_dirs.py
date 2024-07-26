@@ -110,10 +110,10 @@ def make_dir_hdr(dataroot):
                     print(responseDebevec)
                     all_response.append(responseDebevec)
     all_response = np.array(all_response)# shape=(len(all_response), 256, 3))
-    calibrated_responce = all_response.mean(axis=0)
-    if responseDebevec.shape == calibrated_responce.shape:
+    calibrated_response = all_response.mean(axis=0)
+    if responseDebevec.shape == calibrated_response.shape:
         print("Camera response function created successfully.")
-    calibrated_responce(calibrated_responce)  """
+    calibrated_response(calibrated_response)  """
             
 
 
@@ -163,7 +163,7 @@ def create_hdr_images(dataroot='./pre_hdr', out_dataroot='./post_hdr/hdr_images'
             os.makedirs(out_dataroot)
         
         # Assuming each image set to be processed into HDR is in a separate subfolder
-        responces= []
+        responses= []
         for subdir in os.listdir(dataroot_temp):
             subdir_path = os.path.join(dataroot_temp, subdir)
             subdir_path_fog = os.path.join(fog_dataroot_temp, subdir)
@@ -234,7 +234,7 @@ def create_hdr_images(dataroot='./pre_hdr', out_dataroot='./post_hdr/hdr_images'
     ################## Obtain Camera Response Function (CRF) ##################
     # this is saved for future if the proof of concept works.
     # you can also use the code that is commented out above to make aligned images 
-    # if you are no longer using a tripod. I am starting to get the average inverse camera responce
+    # if you are no longer using a tripod. I am starting to get the average inverse camera response
     # and saving that to a file in hopes of future use. I am not sure if this will be usable or if it 
     # is a waste, but further analysis should help decide. also Alighment of foggy images is still an issue
 
@@ -279,7 +279,7 @@ def create_hdr_images(dataroot='./pre_hdr', out_dataroot='./post_hdr/hdr_images'
                         if False:
                             cv2.imshow('HDR Image', fog_tonemapped)
                             cv2.waitKey()
-                        responces.append(responseDebevec)
+                        responses.append(responseDebevec)
 
                         ############### fix once I have the fogged images aligned with the truth images. ################
                         """tonemapped = cv2.createTonemap(4.4).process(hdrDebevec.copy())
@@ -313,8 +313,8 @@ def create_hdr_images(dataroot='./pre_hdr', out_dataroot='./post_hdr/hdr_images'
                 #print(f"Saved HDR image to {hdr_filename}")
             cv2.destroyAllWindows()
     with open(f'{out_dataroot}\\response.txt', 'w') as f:
-        for responce in responces:
-            f.write(f'{responce}\n')
+        for response in responses:
+            f.write(f'{response}\n')
 
 
 

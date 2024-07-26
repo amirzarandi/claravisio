@@ -185,7 +185,7 @@ python test.py --dataroot /scratch/general/nfs1/u6059624/StereoFog/stereofog_ima
 
 python test.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/clara_images_processed --direction BtoA --model pix2pix --name CLARA1 --gpu_ids 0
 
-python plot_model_results.py --results_path results/CLAXANDER --shuffle
+python plot_model_results.py --results_path results/CLARA2 --shuffle
 
 python preprocess_clara.py --dataroot datasets/ClaraVisio
 ```
@@ -193,9 +193,11 @@ python preprocess_clara.py --dataroot datasets/ClaraVisio
 metrics
 
 ```bash
+python make_hdr_dirs.py --dataroot /scratch/general/nfs1/u6059624/FogEye/HDR
+
 python plot_epoch_progress.py --model_name CLAXANDER --checkpoints_path checkpoints/CLAXANDER
 
-python quantitative_evaluation_model_results.py --results_path results/CLAXANDER
+python quantitative_evaluation_model_results.py --results_path results/CLARA2
 ```
 
 
