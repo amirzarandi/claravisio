@@ -59,16 +59,16 @@ def calculate_model_results(results_path):
         PSNR_scores.append(PSNR)
 
         # Calculating MAE between the fake image and the clear image
-        MAE = np.mean(np.abs(clear_image_nonfloat - fake_image_nonfloat))
+        clear_image_float = clear_image_nonfloat.astype(np.float32) / 255
+        fake_image_float = fake_image_nonfloat.astype(np.float32) / 255
+        MAE = np.mean(np.abs(clear_image_float - fake_image_float))
         MAE_scores.append(MAE)
 
         # Calculating MSE between the fake image and the clear image
-        MSE = np.mean((clear_image_nonfloat - fake_image_nonfloat) ** 2)
+        MSE = np.mean((clear_image_float - fake_image_float) ** 2)
         MSE_scores.append(MSE)
 
         # Calculating Cross Entropy between the fake image and the clear image
-        clear_image_float = clear_image_nonfloat.astype(np.float32) / 255
-        fake_image_float = fake_image_nonfloat.astype(np.float32) / 255
         Cross_entropy = -np.mean(clear_image_float * np.log(fake_image_float + 1e-12) + 
                                  (1 - clear_image_float) * np.log(1 - fake_image_float + 1e-12))
         Cross_entropy_scores.append(Cross_entropy)

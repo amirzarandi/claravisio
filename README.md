@@ -102,6 +102,9 @@ unzip file.zip
 python preprocess_stereofog_dataset.py --dataroot /scratch/general/nfs1/u6059624/StereoFog/stereofog_images
 
 python preprocess_clara.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/claravisio_images
+
+
+python png2bmp.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/claravisio_images --output_name clara_bmp
 ```
 need to run again to create a new split.
 
@@ -164,10 +167,10 @@ In case you want to install them manually, the packages include:
 ### train
 
 ```bash
-python train.py --dataroot /scratch/general/nfs1/u6059624/StereoFog/stereofog_images_processed --name CLAXANDER --model pix2pix --direction BtoA --gpu_ids 0 --n_epochs 25 --n_epochs_decay 15
+python train.py --dataroot /scratch/general/nfs1/u6059624/StereoFog/stereofog_images_processed --name AL2 --model pix2pix --direction BtoA --gpu_ids 0 --n_epochs 25 --n_epochs_decay 15
 
 
-python train.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/clara_images_processed --name CLARA3 --model pix2pix --direction BtoA --gpu_ids 0 --n_epochs 25 --n_epochs_decay 15
+python train.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/clara_images_processed --name CLARA2 --model pix2pix --direction BtoA --gpu_ids 0 --n_epochs 25 --n_epochs_decay 15
 
 python test.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/clara_images_processed --direction BtoA --model pix2pix --name CLARA1 --gpu_ids 0
 
