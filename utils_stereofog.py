@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue 15 Aug 2023
+Modified on Thurs 25 Jul 2024
 
 Utility functions by Anton Pollak used in the stereofog project
-
+Additional Metrics added by Amir Zarandi
 
 """
 import os
@@ -20,7 +21,9 @@ import torch.nn as nn # For the custom loss function
 from torch import squeeze
 from PIL import Image
 import torchvision.transforms as T
-
+from skimage.metrics import peak_signal_noise_ratio as psnr
+from torch.nn import functional as F
+import matplotlib.pyplot as plt
 
 # code for detecting the blurriness of an image (https://pyimagesearch.com/2015/09/07/blur-detection-with-opencv/)
 def variance_of_laplacian(image):
@@ -56,12 +59,20 @@ def image_ncc(img1, img2):
     """
     return (1.0/(img1.size-1)) * np.sum(norm_data(img1)*norm_data(img2))
 
+# Code for calculating the MAE between two images
+def image_mae(img1, img2):
+    return np.mean(np.abs(img1 - img2))
+
+# Function to calculate Cross-Entropy loss
+def image_cross_entropy(img1, img2):
+    img1_tensor = torch.tensor(img1, dtype=torch.float32)
+    img2_tensor = torch.tensor(img2, dtype=torch.float32)
+    return F.binary_cross_entropy_with_logits(img1_tensor, img2_tensor).item()
+
 def calculate_model_results(results_path, epoch='latest', epoch_test=False):
     if epoch_test:
-
         model_name = results_path.split('/')[-2].replace('_epochs', '')
         results_path = os.path.join(results_path, f'{model_name}/test_{epoch}/images')
-
     else:
         results_path = os.path.join(results_path, f'test_{epoch}/images')
 
@@ -79,41 +90,35 @@ def calculate_model_results(results_path, epoch='latest', epoch_test=False):
     SSIM_scores = []
     CW_SSIM_scores = []
     MS_SSIM_scores = []
-    
+    MAE_scores = []
+    PSNR_scores = []
+    Cross_entropy_scores = []
+
     print('Calculating scores for model:', results_path.split('/')[-3])
 
     for i, image in enumerate(images):
-
-
         clear_image_nonfloat = cv2.imread(os.path.join(results_path, images[i][:-10] + 'real_B' + '.png'))
         fogged_image_nonfloat = cv2.imread(os.path.join(results_path, images[i][:-10] + 'real_A' + '.png'))
         fake_image_nonfloat = cv2.imread(os.path.join(results_path, images[i]))
 
-        # Calculating the Pearson correlation coefficient between the two images (https://stackoverflow.com/questions/34762661/percentage-difference-between-two-images-in-python-using-correlation-coefficient, https://mbrow20.github.io/mvbrow20.github.io/PearsonCorrelationPixelAnalysis.html)
         clear_image_gray = cv2.cvtColor(clear_image_nonfloat, cv2.COLOR_BGR2GRAY)
         fake_image_gray = cv2.cvtColor(fake_image_nonfloat, cv2.COLOR_BGR2GRAY)
         Pearson_image_correlation = np.corrcoef(np.asarray(fake_image_gray), np.asarray(clear_image_gray))
         corrImAbs = np.absolute(Pearson_image_correlation)
-
         Pearson_image_correlations.append(np.mean(corrImAbs))
 
-        # Calculating the MSE between the two images
         MSE_score = image_mse(clear_image_gray, fake_image_gray)
         MSE_scores.append(MSE_score)
 
-        # Calculating the NCC between the two images
         NCC_score = image_ncc(clear_image_gray, fake_image_gray)
         NCC_scores.append(NCC_score)
 
-        # Calculating the SSIM between the fake image and the clear image
         (SSIM_score_reconstruction, SSIM_diff_reconstruction) = structural_similarity(clear_image_nonfloat, fogged_image_nonfloat, full=True, multichannel=True, channel_axis=2)
         SSIM_scores.append(SSIM_score_reconstruction)
 
-        # Calculating the CW-SSIM between the fake image and the clear image (https://github.com/jterrace/pyssim)
         CW_SSIM = SSIM(Image.open(os.path.join(results_path, images[i][:-10] + 'real_B' + '.png'))).cw_ssim_value(Image.open(os.path.join(results_path, images[i])))
         CW_SSIM_scores.append(CW_SSIM)
 
-        # Calculating the MS-SSIM between the fake image and the clear image
         real_img = np.array(Image.open(os.path.join(results_path, images[i][:-10] + 'real_B' + '.png'))).astype(np.float32)
         real_img = torch.from_numpy(real_img).unsqueeze(0).permute(0, 3, 1, 2)
         fake_img = np.array(Image.open(os.path.join(results_path, images[i]))).astype(np.float32)
@@ -121,18 +126,32 @@ def calculate_model_results(results_path, epoch='latest', epoch_test=False):
         MS_SSIM = ms_ssim(real_img, fake_img, data_range=255, size_average=True).item()
         MS_SSIM_scores.append(MS_SSIM)
 
+        # Calculate MAE
+        MAE_score = image_mae(clear_image_gray, fake_image_gray)
+        MAE_scores.append(MAE_score)
+
+        # Calculate PSNR
+        PSNR_score = psnr(clear_image_gray, fake_image_gray, data_range=255)
+        PSNR_scores.append(PSNR_score)
+
+        # Calculate Cross-Entropy
+        Cross_entropy_score = image_cross_entropy(clear_image_gray, fake_image_gray)
+        Cross_entropy_scores.append(Cross_entropy_score)
+
         if i % 25 == 0:
             print(f'Image {i} of {len(images)}')
 
-    # Calculate the average values
     mean_Pearson = np.mean(Pearson_image_correlations)
     mean_MSE = np.mean(MSE_scores)
     mean_NCC = np.mean(NCC_scores)
     mean_SSIM = np.mean(SSIM_scores)
     mean_CW_SSIM = np.mean(CW_SSIM_scores)
     mean_MS_SSIM = np.mean(MS_SSIM_scores)
+    mean_MAE = np.mean(MAE_scores)
+    mean_PSNR = np.mean(PSNR_scores)
+    mean_Cross_entropy = np.mean(Cross_entropy_scores)
 
-    return mean_Pearson, mean_MSE, mean_NCC, mean_SSIM, mean_CW_SSIM, mean_MS_SSIM
+    return mean_Pearson, mean_MSE, mean_NCC, mean_SSIM, mean_CW_SSIM, mean_MS_SSIM, mean_MAE, mean_PSNR, mean_Cross_entropy
     
 # Code source: https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix/issues/1161
 def generate_stats_from_log(experiment_name, line_interval=10, nb_data=10800, enforce_last_line=True, fig = None, ax = None, highlight_epoch=None):
