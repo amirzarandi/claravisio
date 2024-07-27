@@ -101,7 +101,9 @@ unzip file.zip
 ``` bash
 python preprocess_stereofog_dataset.py --dataroot /scratch/general/nfs1/u6059624/StereoFog/stereofog_images
 
-python preprocess_clara.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/claravisio_images
+python preprocess+augment.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/claravisio_images
+
+python preprocess_clara.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/clara_bmp
 
 
 python png2bmp.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/claravisio_images --output_name clara_bmp
@@ -167,12 +169,12 @@ In case you want to install them manually, the packages include:
 ### train
 
 ```bash
-python train.py --dataroot /scratch/general/nfs1/u6059624/StereoFog/stereofog_images_processed --name AL2 --model pix2pix --direction BtoA --gpu_ids 0 --n_epochs 25 --n_epochs_decay 15
+python train.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/clara_augmented --name CLARA3_AUG --continue_train --model pix2pix --direction BtoA --gpu_ids 0 --n_epochs 25 --n_epochs_decay 15
 
 
 python train.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/clara_images_processed --name CLARA2 --model pix2pix --direction BtoA --gpu_ids 0 --n_epochs 25 --n_epochs_decay 15
 
-python test.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/clara_images_processed --direction BtoA --model pix2pix --name CLARA1 --gpu_ids 0
+python train.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/claravisio_images_augmented --name CLARA_AUG --direction BtoA --model pix2pix --gpu_ids 0 --n_epochs 25 --n_epochs_decay 15 
 
 
 ```
@@ -180,12 +182,14 @@ python test.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/clara_images
 ### test
 
 ```bash
-python test.py --dataroot /scratch/general/nfs1/u6059624/StereoFog/stereofog_images_processed  --direction BtoA --model pix2pix --name CLAXANDER --gpu_ids 0
+python test.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/clara_augmented --direction BtoA --model pix2pix --name CLARA3_AUG --gpu_ids 0
 
 
-python test.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/clara_images_processed --direction BtoA --model pix2pix --name CLARA1 --gpu_ids 0
+python test.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/clara_images_processed --direction BtoA --model pix2pix --name AL2 --gpu_ids 0
 
-python plot_model_results.py --results_path results/CLARA2 --shuffle
+python plot_model_results.py --results_path results/CLARA3_AUG --shuffle
+python quantitative_evaluation_model_results.py --results_path results/CLARA3
+python quantitative_evaluation_model_results.py --results_path results/CLARA3_AUG
 
 python preprocess_clara.py --dataroot datasets/ClaraVisio
 ```

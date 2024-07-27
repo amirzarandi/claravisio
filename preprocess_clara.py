@@ -24,7 +24,7 @@ if 'augmented' not in path and augment:
         sys.exit()
 
 # Create new processed directory
-processed_path = os.path.join(os.path.dirname(path), 'clara_images_processed')
+processed_path = os.path.join(os.path.dirname(path), 'clara_aug_processed')
 os.makedirs(processed_path, exist_ok=True)
 
 # Move all subsets of the dataset into one folder in the processed directory
