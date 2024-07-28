@@ -107,6 +107,8 @@ python preprocess_clara.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/
 
 
 python png2bmp.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/claravisio_images --output_name clara_bmp
+
+python preprocess2.py --dataroot /scratch/general/nfs1/u6059624/StereoFog/stereofog_images_augmented --augment
 ```
 need to run again to create a new split.
 
@@ -177,6 +179,12 @@ python train.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/clara_image
 python train.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/claravisio_images_augmented --name CLARA_AUG --direction BtoA --model pix2pix --gpu_ids 0 --n_epochs 25 --n_epochs_decay 15 
 
 
+python train.py --dataroot /scratch/general/nfs1/u6059624/StereoFog/stereofog_images_augmented --norm batch --netD n_layers --n_layers_D 2 --netG resnet_9blocks --gan_mode vanilla --ngf 128 --ndf 32 --lr_policy linear --init_type normal --name AL4 --model pix2pixMSSSIM --direction BtoA --gpu_ids 0 --n_epochs 25 --n_epochs_decay 15
+
+
+python preprocess2.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/claravisio_images_augmented --augment
+
+python train.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/claravisio_images_augmented --norm batch --netD n_layers --n_layers_D 2 --netG resnet_9blocks --gan_mode vanilla --ngf 128 --ndf 32 --lr_policy linear --init_type normal --name CLARA4 --model pix2pixMSSSIM --direction BtoA --gpu_ids 0 --n_epochs 25 --n_epochs_decay 15
 ```
 
 ### test
