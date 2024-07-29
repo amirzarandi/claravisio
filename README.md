@@ -184,7 +184,9 @@ python train.py --dataroot /scratch/general/nfs1/u6059624/StereoFog/stereofog_im
 
 python preprocess2.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/claravisio_images_augmented --augment
 
-python train.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/claravisio_images_augmented --norm batch --netD n_layers --n_layers_D 2 --netG resnet_9blocks --gan_mode vanilla --ngf 128 --ndf 32 --lr_policy linear --init_type normal --name CLARA4 --model pix2pixMSSSIM --direction BtoA --gpu_ids 0 --n_epochs 25 --n_epochs_decay 15
+python train.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/claravisio_images_augmented --norm batch --netD n_layers --n_layers_D 2 --netG resnet_9blocks --gan_mode vanilla --ngf 128 --ndf 32 --lr_policy linear --init_type normal --name CLARA5 --model pix2pixMSSSIM --direction BtoA --gpu_ids 0 --n_epochs 35 --n_epochs_decay 25
+
+python test.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/claravisio_images_augmented --norm batch --netD n_layers --n_layers_D 2 --netG resnet_9blocks --ngf 128 --ndf 32 --init_type normal --name CLARA5 --model pix2pixMSSSIM --direction BtoA --gpu_ids 0
 ```
 
 ### test
@@ -195,8 +197,8 @@ python test.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/clara_augmen
 
 python test.py --dataroot /scratch/general/nfs1/u6059624/ClaraVisio/clara_images_processed --direction BtoA --model pix2pix --name AL2 --gpu_ids 0
 
-python plot_model_results.py --results_path results/CLARA3_AUG --shuffle
-python quantitative_evaluation_model_results.py --results_path results/CLARA3
+python plot_res.py --results_path results/CLARA5 --shuffle
+python quantitative_evaluation_model_results.py --results_path results/CLARA5
 python quantitative_evaluation_model_results.py --results_path results/CLARA3_AUG
 
 python preprocess_clara.py --dataroot datasets/ClaraVisio
@@ -207,7 +209,7 @@ metrics
 ```bash
 python make_hdr_dirs.py --dataroot /scratch/general/nfs1/u6059624/FogEye/HDR
 
-python plot_epoch_progress.py --model_name CLAXANDER --checkpoints_path checkpoints/CLAXANDER
+python plot_epoch_progress.py --model_name CLARA4 --checkpoints_path checkpoints/CLARA4
 
 python quantitative_evaluation_model_results.py --results_path results/CLARA2
 ```
