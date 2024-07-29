@@ -5,6 +5,7 @@ import logging
 from time import sleep
 from datetime import datetime, timedelta
 from picamera2 import Picamera2
+import threading
 
 sleep(5)
 
@@ -40,7 +41,34 @@ def filter_log_file(file_path, max_age_hours=24):
         # Write the filtered lines back to the log file
         with open(file_path, 'w') as f:
             f.writelines(filtered_lines)
+
+def sync():
+	BLUE_LED_PIN = 27
+	chip = gpiod.Chip('gpiochip4')
+	blue_led_line = chip.get_line(BLUE_LED_PIN)
+	blue_led_line.request(consumer="LED", type=gpiod.LINE_REQ_DIR_OUT)
+	command = "rclone copy -v /home/amir/Pictures ClaraDrive2:claravisio_images"
+	try: 
+		result = subprocess.run(command, check=True, text=True, shell=True, capture_output=True)
+		logging.info(result.stderr)
+		blue_led_line.set_value(1)
+		sleep(1)
+		blue_led_line.set_value(0)
+	except subprocess.CalledProcessError as cpe:
+		logging.info(cpe.stderr)
+	finally:
+		blue_led_line.set_value(0)
+		blue_led_line.release()
 		
+
+def run_periodically(interval, function):
+    def wrapper():
+        while True:
+            function()
+            threading.Event().wait(interval)
+    thread = threading.Thread(target=wrapper)
+    thread.daemon = True
+    thread.start()		
 
 def main():
 	filter_log_file(log_file)
@@ -48,34 +76,33 @@ def main():
 	
 	try:
 		RED_LED_PIN = 17
-		BLUE_LED_PIN = 27
+		
 		GREEN_LED_PIN = 22
 		BUTTON_PIN = 10
 
-		command = "rclone copy -v /home/amir/Pictures ClaraDrive:claravisio_images"
+		
 
 		picam0 = Picamera2(0)
 		picam0.start()
-
+		
 		chip = gpiod.Chip('gpiochip4')
 
 		red_led_line = chip.get_line(RED_LED_PIN)
-		blue_led_line = chip.get_line(BLUE_LED_PIN)
 		green_led_line = chip.get_line(GREEN_LED_PIN)
 		button_line = chip.get_line(BUTTON_PIN)
 
 		red_led_line.request(consumer="LED", type=gpiod.LINE_REQ_DIR_OUT)
-		blue_led_line.request(consumer="LED", type=gpiod.LINE_REQ_DIR_OUT)
 		green_led_line.request(consumer="LED", type=gpiod.LINE_REQ_DIR_OUT)
 		button_line.request(consumer="Button", type=gpiod.LINE_REQ_DIR_IN)
 		
-		blue_led_line.set_value(1)
 		green_led_line.set_value(1)
 		red_led_line.set_value(1)
 		sleep(1)
-		blue_led_line.set_value(0)
 		green_led_line.set_value(0)
 		red_led_line.set_value(0)
+		
+		sleep(5)
+		run_periodically(5, sync)
 		
 
 		current_date = datetime.now().strftime('%Y-%m-%d')
@@ -96,7 +123,6 @@ def main():
 
 		while True:
 			green_led_line.set_value(0)
-			blue_led_line.set_value(0)
 			button_state = button_line.get_value()
 			if button_state == 1:
 				if(is_A_or_B):
@@ -107,17 +133,9 @@ def main():
 					is_A_or_B = True
 					photo_number += 1
 				green_led_line.set_value(1)
-				sleep(0.5)
-				green_led_line.set_value(0)
-				try: 
-					result = subprocess.run(command, check=True, text=True, shell=True, capture_output=True)
-					logging.info(result.stderr)
-					blue_led_line.set_value(1)
-					sleep(0.5)
-					blue_led_line.set_value(0)
-				except subprocess.CalledProcessError as cpe:
-					logging.info(cpe.stderr)
-					red_led_line.set_value(1)
+				sleep(1)
+			green_led_line.set_value(0)
+				
 
 
 	except Exception as e:
@@ -128,10 +146,8 @@ def main():
 	finally:
 		green_led_line.set_value(0)
 		red_led_line.set_value(0)
-		blue_led_line.set_value(0)
 		red_led_line.release()
 		green_led_line.release()
-		blue_led_line.release()
 		button_line.release()
 		picam0.stop()
 		picam0.stop_preview()
